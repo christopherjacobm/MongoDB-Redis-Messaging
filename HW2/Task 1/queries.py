@@ -9,39 +9,84 @@ collection = connectMongo()
 
 ##### FIND ALL ENTRIES IN THE DATABASE #####
 # Assuming RQ0 is the query to find all entries in the database
-#RQ0 = collection.find()
-#for data in RQ0:
-#	pprint.pprint(data)
-	
-# WQ1: Adding documents from dummy-fitness.json file
-file = open("dummy-fitness.json","r")
-dummy_documents_list = json.loads(file.read())
+RQ0 = collection.find()
+for data in RQ0:
+	pprint.pprint(data)
 
-collection.insert_many(dummy_documents_list)
+print "WQ1 - Query for inserting all the entries from json file"
+print "----------------------------------------"
+# # Query for inserting all the entries from json file
+# # ----------------------------------------
+page = open('dummy-fitness.json', 'r');
+parsed = json.loads(page.read());
+for item in parsed:
+	collection.insert(item); #WQ1
+# # ----------------------------------------
+print "----------------------------------------"
 
-# WQ2: Updating user 1001 with contents of user1001-new.json
-file = open("user1001-new.json","r")
-user1001_doc = json.loads(file.read())	
-	
-collection.update_one({'uid':user1001_doc['uid']}, {"$set":user1001_doc}, upsert=False)
 
-# RQ1: Getting the count of employees
-print
-print "----- RQ1 - Count: -----"
-print collection.count_documents({})
-print "------------------------"
-print
+print "WQ2 - Query for updating the entries from json file"
+print "----------------------------------------"
+# # Query for updating the entries from json file
+# # ----------------------------------------
+pageMod = open('user1001-new.json', 'r');
+jsonData = json.loads(pageMod.read());
+for key, value in jsonData.iteritems():
+	collection.update({'uid': jsonData['uid']},{"$set": {key: value}});
+# # ----------------------------------------
+print "----------------------------------------"
 
-# RQ2: Retrieving employees who have been tagged as 'irregular'
-RQ2 = collection.find({'tags':'irregular'})
-print 
-print "----- RQ2 - Irregular employees: -----"
-print
+
+print "RQ1 - Query for counting all the entries"
+print "----------------------------------------"
+# # Query for counting all the entries
+# # ----------------------------------------
+RQ1 = collection.count()
+print(RQ1);
+# # ----------------------------------------
+print "----------------------------------------"
+
+
+print "RQ2 - Query for printing all the entries with active tag"
+print "----------------------------------------"
+# # Query for printing all the entries with active tag
+# # ----------------------------------------
+RQ2 = collection.find({'tags' : "active"})
 for data in RQ2:
 	pprint.pprint(data)
-	print
-print "--------------------------------------"
-print
+# # ----------------------------------------
+print "----------------------------------------"
+
+
+print "RQ3 - Query for printing all the entries with step goal greater than 5000"
+print "----------------------------------------"
+# # Query for printing all the entries with step goal greater than 5000
+# # ----------------------------------------
+RQ3 = collection.find({ "goal.stepGoal" : {"$gt" : 5000} })
+for data in RQ3:
+	pprint.pprint(data)
+# # ----------------------------------------
+print "----------------------------------------"
+
+
+print "RQ4 - Query for printing the total Step counts of all users"
+print "----------------------------------------"
+# # Query for printing the total Step counts of all users
+# # ----------------------------------------
+pipeline = [{"$project": {"_id": "$_id", "totalStepCount": {"$sum" : {"$ifNull": ["$stepCount", 0]}}}}]
+RQ4 = collection.aggregate(pipeline)
+for data in RQ4:
+	pprint.pprint(data)
+# # ----------------------------------------
+print "----------------------------------------"
+
+
+# print "----------------------------------------"
+# # # ----------------------------------------
+# # collection.delete_many({"uid": {"$gt" : 1003}})
+# # # ----------------------------------------
+# print "----------------------------------------"
+
 
 ######## FIND ENTRIES WITH CONDITION #######
 ######## collection.find(CONDITION) #######
