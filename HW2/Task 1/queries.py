@@ -12,6 +12,18 @@ collection = connectMongo()
 RQ0 = collection.find()
 for data in RQ0:
 	pprint.pprint(data)
+	
+# WQ1: Adding documents from dummy-fitness.json file
+file = open("dummy-fitness.json","r")
+dummy_documents_list = json.loads(file.read())
+
+collection.insert_many(dummy_documents_list)
+
+# WQ2: Updating user 1001 with contents of user1001-new.json
+file = open("user1001-new.json","r")
+user1001_doc = json.loads(file.read())	
+	
+collection.update_one({'uid':user1001_doc['uid']}, {"$set":user1001_doc}, upsert=False)
 
 ######## FIND ENTRIES WITH CONDITION #######
 ######## collection.find(CONDITION) #######
