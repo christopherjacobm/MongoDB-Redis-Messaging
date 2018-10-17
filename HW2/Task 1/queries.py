@@ -9,9 +9,9 @@ collection = connectMongo()
 
 ##### FIND ALL ENTRIES IN THE DATABASE #####
 # Assuming RQ0 is the query to find all entries in the database
-RQ0 = collection.find()
-for data in RQ0:
-	pprint.pprint(data)
+#RQ0 = collection.find()
+#for data in RQ0:
+#	pprint.pprint(data)
 	
 # WQ1: Adding documents from dummy-fitness.json file
 file = open("dummy-fitness.json","r")
@@ -24,6 +24,24 @@ file = open("user1001-new.json","r")
 user1001_doc = json.loads(file.read())	
 	
 collection.update_one({'uid':user1001_doc['uid']}, {"$set":user1001_doc}, upsert=False)
+
+# RQ1: Getting the count of employees
+print
+print "----- RQ1 - Count: -----"
+print collection.count_documents({})
+print "------------------------"
+print
+
+# RQ2: Retrieving employees who have been tagged as 'irregular'
+RQ2 = collection.find({'tags':'irregular'})
+print 
+print "----- RQ2 - Irregular employees: -----"
+print
+for data in RQ2:
+	pprint.pprint(data)
+	print
+print "--------------------------------------"
+print
 
 ######## FIND ENTRIES WITH CONDITION #######
 ######## collection.find(CONDITION) #######
