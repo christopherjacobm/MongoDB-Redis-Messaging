@@ -16,15 +16,24 @@ while True:
 	if cmds[0] == "select":
 		topic = cmds[1]
 	elif cmds[0] == "listen":
-		pass
+		if topic == '':
+			print "ERROR! No board selected"
 	elif cmds[0] == "stop":
-		pass
+		print "ERROR! Not listening"
 	elif cmds[0] == "read":
-		results = collection.find({ "boardName": topic })
-		for item in results:
-			pprint.pprint(item["message"])
+		if topic == '':
+			print "ERROR! No board selected"
+		else:
+			results = collection.find({ "boardName": topic })
+			for item in results:
+				pprint.pprint(item["message"])
 	elif cmds[0] == "write":
-		msg = ' '.join(cmds[1:])
-		result = rds.publish(topic, msg) 
-		print(result)
-		collection.insert({"boardName": topic,"message": msg})
+		if topic == '':
+			print "ERROR! No board selected"
+		else:
+			msg = ' '.join(cmds[1:])
+			result = rds.publish(topic, msg) 
+			print(result)
+			collection.insert({"boardName": topic,"message": msg})
+	else:
+		print "Invalid input" ;
