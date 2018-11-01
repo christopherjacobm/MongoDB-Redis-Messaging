@@ -9,8 +9,21 @@ rds = redis.Redis()
 collection = connectMongo()
 
 topic = ''
+sub = False
 
 while True:
+
+	if sub:
+		print("subscribing..")
+		while sub:	
+			try:
+				msg = pub.get_message()
+			except:
+				sub = False
+				pub.unsubscribe(topic)
+			if msg:
+				print('Message received: ',msg)
+		
 	cmd = raw_input('Enter command: ')
 	cmds = cmd.split(' ')
 	if cmds[0] == "select":
@@ -18,6 +31,11 @@ while True:
 	elif cmds[0] == "listen":
 		if topic == '':
 			print "ERROR! No board selected"
+		else:
+			sub = True;
+			pub = rds.pubsub()
+			result = pub.subscribe([topic]) 
+			print (result)
 	elif cmds[0] == "stop":
 		print "ERROR! Not listening"
 	elif cmds[0] == "read":
